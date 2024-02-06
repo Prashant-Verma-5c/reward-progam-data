@@ -125,23 +125,21 @@ app.get("/get-client-streak", async (req, res) => {
   }
 
   for (const [clientId, data] of Object.entries(clientMap)) {
-    if (clientId == "1549") {
-      console.log("here we have data ---", data);
-      const obj = {
-        streak: calculateUniqueStreak(
-          data?.map((elem) => moment(elem.created_at))
-        ),
-        lastBrokenStreak: getLastBrokenStreak(
-          data?.map((elem) => moment(elem.created_at))
-        )?.toLocaleString(),
-        isStreakBroken: isStreakBroken(
-          data?.map((elem) => moment(elem.created_at))
-        ),
-      };
+    console.log("here we have data ---", data);
+    const obj = {
+      streak: calculateUniqueStreak(
+        data?.map((elem) => moment(elem.created_at))
+      ),
+      lastBrokenStreak: getLastBrokenStreak(
+        data?.map((elem) => moment(elem.created_at))
+      )?.toLocaleString(),
+      isStreakBroken: isStreakBroken(
+        data?.map((elem) => moment(elem.created_at))
+      ),
+    };
 
-      console.log(obj);
-      streakMap[clientId] = obj;
-    }
+    console.log(obj);
+    streakMap[clientId] = obj;
   }
 
   res.send(streakMap);
