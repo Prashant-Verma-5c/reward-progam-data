@@ -4,7 +4,7 @@ const moment = require("moment-timezone");
 
 const app = express();
 
-const port = process.env.PORT || 8080;
+const PORT = 8000;
 
 moment.tz.setDefault("Asia/Kolkata");
 
@@ -99,6 +99,10 @@ const isStreakBroken = (activationDates) => {
   return false;
 };
 
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
+
 app.get("/get-client-streak", async (req, res) => {
   const response = await axios.get(
     "https://answermagic.5cn.co.in/api/v1/db/data/v1/p7ta4753b4qod00/ScratchCardLogs?limit=200000",
@@ -143,6 +147,6 @@ app.get("/get-client-streak", async (req, res) => {
   res.send(streakMap);
 });
 
-app.listen(port, () => {
+app.listen(PORT, () => {
   console.log("server is listening on port");
 });
