@@ -6,21 +6,17 @@ const app = express();
 
 const PORT = 8000;
 
-moment.tz.setDefault("Asia/Kolkata");
-
 const getLastBrokenStreak = (activationDates) => {
-  console.log("add datys ===>", activationDates);
+  // console.log("add datys ===>", activationDates);
   let lastBrokenStreak;
-  const allDays = activationDates?.map((date) => {
-    return moment(date);
-  });
-  const uniqueDays = [...new Set(allDays)];
+  const days = activationDates?.map((ele) => ele.format("YYYY-MM-DD"));
+  const uniqueDays = [...new Set(days)];
 
-  console.log("==>", uniqueDays);
+  // console.log("==>", uniqueDays);
 
-  const lastCaseActivatedDay = allDays.at(-1);
+  const lastCaseActivatedDay = activationDates.at(-1);
 
-  console.log("last ==>", lastCaseActivatedDay);
+  // console.log("last ==>", lastCaseActivatedDay);
   for (let i = 1; i < uniqueDays.length; i++) {
     const dayDiff = moment(uniqueDays[i]).diff(uniqueDays[i - 1], "day");
     if (dayDiff > 2) {
@@ -28,16 +24,16 @@ const getLastBrokenStreak = (activationDates) => {
     }
   }
 
-  console.log(
-    "here is the data ===>",
-    moment().diff(lastCaseActivatedDay, "day")
-  );
+  // console.log(
+  //   "here is the data ===>",
+  //   moment().diff(lastCaseActivatedDay, "day")
+  // );
 
   if (moment().diff(moment(lastCaseActivatedDay), "day") >= 2) {
     lastBrokenStreak = moment(lastCaseActivatedDay).add(2, "day");
   }
 
-  console.log("here is the last broken streak ===>", lastBrokenStreak);
+  // console.log("here is the last broken streak ===>", lastBrokenStreak);
   return lastBrokenStreak;
 };
 
@@ -46,15 +42,17 @@ const calculateUniqueStreak = (activationDates) => {
     return 0;
   }
 
-  const todayDate = moment();
   let latestStreakBroken;
+  const todayDate = moment().tz("Asia/KolKata");
+  // console.log({ todayDate });
 
-  const allDays = activationDates?.map((date) => {
-    return moment(date);
-  });
-  const lastCaseActivatedDay = allDays.at(-1);
-  const uniqueDays = [...new Set(allDays)];
-
+  const lastCaseActivatedDay = activationDates.at(-1);
+  // console.log({
+  //   lastCaseActivatedDay: lastCaseActivatedDay,
+  // });
+  const days = activationDates?.map((ele) => ele.format("YYYY-MM-DD"));
+  const uniqueDays = [...new Set(days)];
+  // console.log({ uniqueDays });
   let currentStreak = 1;
 
   for (let i = 1; i < uniqueDays.length; i++) {
@@ -86,11 +84,7 @@ const isStreakBroken = (activationDates) => {
     return true;
   }
 
-  const allDays = activationDates?.map((date) => {
-    return moment(date);
-  });
-
-  const lastCaseActivatedDay = allDays.at(-1);
+  const lastCaseActivatedDay = activationDates.at(-1);
 
   if (moment().diff(lastCaseActivatedDay, "day") >= 2) {
     return true;
@@ -116,29 +110,33 @@ app.get("/get-client-streak", async (req, res) => {
   const clientMap = {};
   const streakMap = {};
   for (let card of allCards) {
-    const clientId = card.client_fk;
+    const clientId = card?.client_fk;
+    if (!clientId) {
+      continue;
+    }
     if (clientId in clientMap) {
       clientMap[clientId].push(card);
     } else {
       clientMap[clientId] = [card];
     }
   }
+  // console.dir({ clientMap }, { depth: null });
 
   for (const [clientId, data] of Object.entries(clientMap)) {
-    console.log("here we have data ---", data);
+    // console.log("here we have data ---", data);
     const obj = {
       streak: calculateUniqueStreak(
-        data?.map((elem) => moment(elem.created_at))
+        data?.map((elem) => moment(elem.created_at).tz("Europe/London"))
       ),
       lastBrokenStreak: getLastBrokenStreak(
-        data?.map((elem) => moment(elem.created_at))
+        data?.map((elem) => moment(elem.created_at).tz("Europe/London"))
       )?.toLocaleString(),
       isStreakBroken: isStreakBroken(
-        data?.map((elem) => moment(elem.created_at))
+        data?.map((elem) => moment(elem.created_at).tz("Europe/London"))
       ),
     };
 
-    console.log(obj);
+    // console.log(obj);
     streakMap[clientId] = obj;
   }
 
