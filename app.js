@@ -29,7 +29,7 @@ const getLastBrokenStreak = (activationDates) => {
   //   moment().diff(lastCaseActivatedDay, "day")
   // );
 
-  if (moment().diff(moment(lastCaseActivatedDay), "day") >= 2) {
+  if (moment().diff(moment(lastCaseActivatedDay), "day") > 2) {
     lastBrokenStreak = moment(lastCaseActivatedDay).add(2, "day");
   }
 
@@ -71,7 +71,7 @@ const calculateUniqueStreak = (activationDates) => {
     currentStreak = 1;
   }
 
-  if (moment(todayDate).diff(lastCaseActivatedDay, "day") >= 2) {
+  if (moment(todayDate).diff(lastCaseActivatedDay, "day") > 2) {
     latestStreakBroken = moment();
     currentStreak = 0;
   }
@@ -86,7 +86,7 @@ const isStreakBroken = (activationDates) => {
 
   const lastCaseActivatedDay = activationDates.at(-1);
 
-  if (moment().diff(lastCaseActivatedDay, "day") >= 2) {
+  if (moment().diff(lastCaseActivatedDay, "day") > 2) {
     return true;
   }
 
